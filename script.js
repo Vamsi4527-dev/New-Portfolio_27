@@ -1,118 +1,92 @@
-(function () {
+gsap.registerPlugin(ScrollTrigger);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const html = document.documentElement;
-  const themeBtn = document.getElementById('theme-toggle');
-  const iconMoon = document.getElementById('icon-moon');
-  const iconSun  = document.getElementById('icon-sun');
-
-  function setTheme(t) {
-    html.setAttribute('data-theme', t);
-    localStorage.setItem('dvk-theme', t);
-    if (t === 'dark') {
-      iconMoon.classList.remove('hidden');
-      iconSun.classList.add('hidden');
-    } else {
-      iconMoon.classList.add('hidden');
-      iconSun.classList.remove('hidden');
-    }
-  }
-
-  const saved = localStorage.getItem('dvk-theme');
-  const pref  = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  setTheme(saved || (pref ? 'dark' : 'light'));
-
-  themeBtn.addEventListener('click', () => {
-    setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+/* ---------- cursor ---------- */
+const cursor = document.getElementById('cursor');
+if(!reduceMotion){
+  window.addEventListener('pointermove', e=>{
+    gsap.to(cursor,{x:e.clientX,y:e.clientY,duration:0.15,ease:'power2.out'});
   });
-
-  const ham  = document.getElementById('hamburger');
-  const menu = document.getElementById('mobile-menu');
-
-  ham.addEventListener('click', () => {
-    menu.classList.toggle('open');
-    ham.classList.toggle('open');
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>cursor.classList.add('hover'));
+    el.addEventListener('mouseleave',()=>cursor.classList.remove('hover'));
   });
+}
 
-  document.querySelectorAll('.mobile-link').forEach(l =>
-    l.addEventListener('click', () => {
-      menu.classList.remove('open');
-      ham.classList.remove('open');
-    })
-  );
+/* ---------- scroll progress ---------- */
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop)/(h.scrollHeight - h.clientHeight) * 100;
+  progress.style.width = pct + '%';
+});
 
-  const reveals = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        e.target.style.transitionDelay = (i * 60) + 'ms';
-        e.target.classList.add('visible');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+/* ---------- theme toggle ---------- */
+const themeToggle = document.getElementById('themeToggle');
+const root = document.documentElement;
+function setTheme(t){
+  root.setAttribute('data-theme', t);
+  document.getElementById('introWord') && (document.getElementById('intro').style.background = t==='light' ? '#0b0b0b' : '#0b0b0b');
+}
+themeToggle.addEventListener('click', ()=>{
+  const cur = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  setTheme(cur);
+});
 
-  reveals.forEach(el => obs.observe(el));
-
-  const sections  = document.querySelectorAll('section[id]');
-  const navLinks  = document.querySelectorAll('.nav-link');
-  const progressBar = document.getElementById('progress-bar');
-
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) current = s.id;
-    });
-    navLinks.forEach(l => {
-      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
-    });
-
-    if (progressBar) {
-      const winScroll = window.scrollY || document.documentElement.scrollTop;
-      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
-      progressBar.style.width = scrolled + '%';
-    }
-  }, { passive: true });
-
-  const taglineEl = document.querySelector('.hero-tagline');
-  if (taglineEl) {
-    const roles = ['Full Stack Python Developer', 'DSA Problem Solver', 'AI & DS Student'];
-    let ri = 0, ci = 0, del = false, paused = false;
-
-    function type() {
-      if (paused) return;
-      const role = roles[ri];
-      if (!del) {
-        ci++;
-        taglineEl.textContent = role.slice(0, ci);
-        if (ci === role.length) {
-          del = true; paused = true;
-          setTimeout(() => { paused = false; }, 1400);
-        }
-      } else {
-        ci--;
-        taglineEl.textContent = role.slice(0, ci);
-        if (ci === 0) {
-          del = false;
-          ri = (ri + 1) % roles.length;
-          paused = true;
-          setTimeout(() => { paused = false; }, 300);
-        }
-      }
-      setTimeout(type, del ? 35 : 70);
-    }
-    setTimeout(type, 800);
+/* ---------- intro sequence ---------- */
+const word = "DASARI VAMSI KRISHNA";
+const introWord = document.getElementById('introWord');
+word.split(' ').forEach((w,i)=>{
+  w.split('').forEach(ch=>{
+    const span = document.createElement('span');
+    span.textContent = ch;
+    introWord.appendChild(span);
+  });
+  if(i < word.split(' ').length -1){
+    const space = document.createElement('span');
+    space.innerHTML='&nbsp;';
+    introWord.appendChild(space);
   }
+});
 
-  document.querySelectorAll('a[href^="#"]').forEach(a =>
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      const t = document.querySelector(a.getAttribute('href'));
-      if (t) scrollTo({ top: t.getBoundingClientRect().top + scrollY - 70, behavior: 'smooth' });
-    })
-  );
+const tl = gsap.timeline({defaults:{ease:'power4.out'}});
+if(reduceMotion){
+  gsap.set('#intro',{display:'none'});
+} else {
+  tl.to('#introWord span', {y:'0%', duration:0.7, stagger:0.02})
+    .to('#introBarFill', {width:'100%', duration:0.5}, "-=0.2")
+    .to('#intro', {yPercent:-100, duration:0.9, ease:'power4.inOut'}, "+=0.15")
+    .set('#intro',{display:'none'});
+}
 
-  const yr = document.getElementById('yr');
-  if (yr) yr.textContent = new Date().getFullYear();
+/* ---------- hero name reveal ---------- */
+gsap.to('.hero-name .line span', {
+  y:'0%', duration:1, stagger:0.08, ease:'power4.out',
+  delay: reduceMotion ? 0 : 2.0
+});
+gsap.fromTo('.hero-role, .hero-cta, .eyebrow, .scroll-cue',
+  {opacity:0, y:16},
+  {opacity:1, y:0, duration:0.9, stagger:0.12, ease:'power3.out', delay: reduceMotion ? 0 : 2.3}
+);
 
-})();
+/* ---------- scroll reveals ---------- */
+gsap.utils.toArray('.reveal').forEach(el=>{
+  gsap.to(el, {
+    opacity:1, y:0, duration:0.9, ease:'power3.out',
+    scrollTrigger:{ trigger:el, start:'top 88%' }
+  });
+});
+
+/* ---------- active nav link ---------- */
+const navLinks = document.querySelectorAll('[data-nav]');
+const sections = ['hero','about','skills','projects','work','contact'].map(id=>document.getElementById(id));
+sections.forEach((sec,i)=>{
+  ScrollTrigger.create({
+    trigger:sec, start:'top 50%', end:'bottom 50%',
+    onEnter:()=>setActive(i), onEnterBack:()=>setActive(i)
+  });
+});
+function setActive(i){
+  navLinks.forEach(l=>l.classList.remove('active'));
+  navLinks[i] && navLinks[i].classList.add('active');
+}
