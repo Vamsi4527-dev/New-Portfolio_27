@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dasari Vamsi Krishna — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/lenis@1.3.26/dist/lenis.css">
+<script src="https://unpkg.com/lenis@1.3.26/dist/lenis.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="bg-field" id="bgField" aria-hidden="true"></div>
+<canvas class="particles" id="particles" aria-hidden="true"></canvas>
+<div class="progress" id="progress"></div>
+
+<div class="intro" id="intro">
+  <div class="intro-word" id="introWord"></div>
+  <div class="intro-bar"><i id="introBarFill"></i></div>
+</div>
+
+<nav>
+  <a href="#hero" class="brand">
+    <span class="brand-mark">DVK</span>
+    <span class="brand-text">
+      <span class="brand-role mono">AI &amp; DATA SCIENCE Student</span>
+    </span>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="#hero" data-nav class="active">Home</a>
+    <a href="#about" data-nav>About</a>
+    <a href="#skills" data-nav>Skills</a>
+    <a href="#projects" data-nav>Projects</a>
+    <a href="#work" data-nav>Experience</a>
+    <a href="#contact" data-nav>Contact</a>
+  </div>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark and light mode"><span class="knob"></span></button>
+</nav>
+
+<!-- Floating Hamburger Menu Pill (Mobile/Tablet) -->
+<button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu">
+  <span class="menu-text">Menu</span>
+  <span class="menu-icon">
+    <span></span>
+    <span></span>
+  </span>
+</button>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobileMenuOverlay">
+  <div class="mobile-menu-links">
+    <a href="#hero" data-mobile-nav class="active">Home</a>
+    <a href="#about" data-mobile-nav>About</a>
+    <a href="#skills" data-mobile-nav>Skills</a>
+    <a href="#projects" data-mobile-nav>Projects</a>
+    <a href="#work" data-mobile-nav>Experience</a>
+    <a href="#contact" data-mobile-nav>Contact</a>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section class="hero" id="hero">
+    <div class="eyebrow"><span class="dot"></span> Available for opportunities</div>
+        <h1 class="hero-name" id="heroName">
+          <span class="hero-line" id="heroLine1"></span>
+          <span class="hero-line" id="heroLine2"></span>
+        </h1>
+    <p class="hero-role">AI &amp; Data Science student — building full‑stack web apps,
+      ATS tools, and dashboards with Python, Flask and clean, minimal interfaces.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn solid">View projects</a>
+      <a href="mailto:vamsikrishnadasari1234@gmail.com" class="btn ghost">Get in touch</a>
+      <a href="https://drive.google.com/file/d/1imD6Q85NbDiAeD9LpBXeLl7M-Tq1Gtlg/view?usp=sharing" target="_blank" rel="noopener" class="btn ghost">Resume <span class="btn-arrow">↗</span></a>
+    </div>
+    <div class="scroll-cue"><div class="stem"><i></i></div> SCROLL</div>
+  </section>
+
+  <section id="about">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-label">01 — About</div>
+        <div class="sec-title">Background</div>
+      </div>
+      <div class="sec-note">Computer Science undergrad focused on AI, data and full‑stack engineering.</div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm a Computer Science and Engineering student specializing in Artificial Intelligence &amp; Data Science
+          at Vishnu Institute of Technology. I like building things end‑to‑end — from a Flask API and a MySQL
+          schema up to a fast, uncluttered interface.</p>
+        <p>Recent work spans an AI resume analyzer built on the Gemini API, a media‑downloader web app, and an
+          HR analytics dashboard uncovering attrition drivers across 1,470+ employee records. I care about
+          interfaces that stay out of the way and code that's easy to reason about.</p>
+      </div>
+      <div class="info-list reveal">
+        <div class="info-row"><span>Education</span><span>B.Tech CSE (AI &amp; DS)</span></div>
+        <div class="info-row"><span>Institute</span><span>Vishnu Institute of Technology</span></div>
+        <div class="info-row"><span>CGPA</span><span>8.25 / 10</span></div>
+        <div class="info-row"><span>Timeline</span><span>Sep 2023 — Present</span></div>
+        <div class="info-row"><span>Location</span><span>Bhimavaram, India</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="skills" id="skills">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-label">02 — Toolkit</div>
+        <div class="sec-title">Skills</div>
+      </div>
+      <div class="sec-note">The languages, frameworks and tools I reach for most.</div>
+    </div>
+    <div class="skill-groups reveal">
+
+      <div class="skill-group">
+        <h4 class="skill-group-title mono">Languages</h4>
+        <div class="tile-grid">
+          <div class="tile"><span class="tile-icon">
+              <svg viewBox="0 0 128 128" width="24" height="24">
+                <path fill="#3776AB" d="M63.4 8c-5.5 0-10.8.5-15.4 1.3-13.6 2.4-16.1 7.4-16.1 16.7v12.2h32.2v4.1H20.1c-9.3 0-17.5 5.6-20 16.3-2.9 12.3-3 20 0 32.8 2.2 9.5 7.6 16.3 16.9 16.3h11v-14.6c0-10.6 9.2-20 20-20h31.9c8.9 0 16-7.3 16-16.2V26c0-8.6-7.3-15.1-16-16.7C74.5 8.4 68.9 8 63.4 8zM46.9 19.6c3.4 0 6.2 2.9 6.2 6.4 0 3.5-2.8 6.3-6.2 6.3-3.4 0-6.2-2.8-6.2-6.3 0-3.5 2.8-6.4 6.2-6.4z"/>
+                <path fill="#FFD43B" d="M97.2 42.3v14.2c0 11-9.4 20.2-20 20.2H45.3c-8.8 0-16 7.5-16 16.2v30.4c0 8.6 7.5 13.7 16 16.2 10.2 3 20 3.6 31.9 0 8-2.3 16-7 16-16.2V111H61v-4.1h48.2c9.3 0 12.8-6.5 16-16.3 3.3-10.1 3.2-19.8 0-32.8-2.3-9.4-6.7-16.3-16-16.3h-12zM81.1 96.4c3.4 0 6.2 2.8 6.2 6.3 0 3.5-2.8 6.4-6.2 6.4-3.4 0-6.2-2.9-6.2-6.4 0-3.5 2.8-6.3 6.2-6.3z"/>
+              </svg>
+            </span><span class="tile-label mono">Python</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5V18c0 1.66 3.58 3 8 3s8-1.34 8-3V5.5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg>
+            </span><span class="tile-label mono">SQL</span></div>
+          <div class="tile"><span class="tile-icon"><i class="devicon-javascript-plain colored"></i></span><span class="tile-label mono">JavaScript</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 4 3 12l6 8"/><path d="M15 4l6 8-6 8"/></svg>
+            </span><span class="tile-label mono">OOP</span></div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h4 class="skill-group-title mono">Frontend</h4>
+        <div class="tile-grid">
+          <div class="tile"><span class="tile-icon"><i class="devicon-html5-plain colored"></i></span><span class="tile-label mono">HTML5</span></div>
+          <div class="tile"><span class="tile-icon"><i class="devicon-css3-plain colored"></i></span><span class="tile-label mono">CSS3</span></div>
+          <div class="tile"><span class="tile-icon"><i class="devicon-bootstrap-plain colored"></i></span><span class="tile-label mono">Bootstrap</span></div>
+          
+          <div class="tile"><span class="tile-icon"><i class="devicon-react-plain colored"></i></span><span class="tile-label mono">React</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="14" height="10" rx="1.4"/><rect x="17" y="8" width="5" height="12" rx="1"/></svg>
+            </span><span class="tile-label mono">Responsive</span></div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h4 class="skill-group-title mono">Backend</h4>
+        <div class="tile-grid">
+          <div class="tile"><span class="tile-icon"><i class="devicon-flask-original colored"></i></span><span class="tile-label mono">Flask</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+            </span><span class="tile-label mono">FastAPI</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M9 6h6M8.2 8.2l7.6 7.6"/></svg>
+            </span><span class="tile-label mono">REST APIs</span></div>
+          <div class="tile"><span class="tile-icon"><i class="devicon-mysql-plain colored"></i></span><span class="tile-label mono">MySQL</span></div>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h4 class="skill-group-title mono">Data &amp; AI</h4>
+        <div class="tile-grid">
+          <div class="tile"><span class="tile-icon"><i class="devicon-pandas-original colored"></i></span><span class="tile-label mono">Pandas</span></div>
+          <div class="tile"><span class="tile-icon"><i class="devicon-numpy-original colored"></i></span><span class="tile-label mono">NumPy</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20V10M11 20V4M18 20v-7"/></svg>
+            </span><span class="tile-label mono">Tableau</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 12V3a9 9 0 1 1-9 9h9z"/><path d="M12 12 21 3"/></svg>
+            </span><span class="tile-label mono">Power BI</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+            </span><span class="tile-label mono">Gemini API</span></div>
+          <div class="tile"><span class="tile-icon icon-mono">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="6"/><path d="M20 20l-5.5-5.5"/><path d="M7 10h6M10 7v6"/></svg>
+            </span><span class="tile-label mono">EDA</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="exp" id="work">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-label">03 — Experience</div>
+        <div class="sec-title">Where I've worked</div>
+      </div>
+      <div class="sec-note">Two internships spanning frontend engineering and applied generative AI.</div>
+    </div>
+    <div class="exp-timeline" id="expTimeline">
+      <div class="timeline-track"><div class="timeline-fill" id="timelineFill"></div></div>
+      <div class="exp-row reveal">
+        <div class="exp-date mono">JUL 2025</div>
+        <div>
+          <div class="exp-role">Frontend Development Intern</div>
+          <div class="exp-org">CodeAlpha Virtual Internship Program</div>
+          <div class="exp-body">Built <b>3+ responsive web pages</b> with HTML5, CSS3 and JavaScript using
+            component‑based UI/UX principles. Integrated REST APIs with Flask and MySQL for real‑time data
+            communication, improving responsiveness by <b>30%</b>. Optimized CSS architecture and removed
+            render‑blocking scripts to speed up page loads.</div>
+        </div>
+      </div>
+      <div class="exp-row reveal">
+        <div class="exp-date mono">AUG 2026</div>
+        <div>
+          <div class="exp-role">Google Cloud Generative AI Virtual Intern</div>
+          <div class="exp-org">SmartBridge, in collaboration with APSCHE &amp; JNTU Kakinada</div>
+          <div class="exp-body">Completed a <b>2‑month (120‑hour)</b> short‑term virtual internship on
+            Google Cloud Generative AI, organized by SmartBridge Educational Services in collaboration with the
+            Andhra Pradesh State Council of Higher Education.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="projects" id="projects">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-label">04 — Selected work</div>
+        <div class="sec-title">Projects</div>
+      </div>
+      <div class="sec-note">Three projects from concept to deployed interface.</div>
+    </div>
+
+    <div class="proj reveal">
+      <div class="proj-index mono">01</div>
+      <div>
+        <div class="proj-title">NexConvert<a href="https://nexconvert-ycer.onrender.com/"><span class="arrow">↗</span></a></div>
+        <div class="proj-desc">A full‑stack media downloader using Flask and yt‑dlp supporting MP4/MP3 pulls
+          from 4 platforms, with server‑side URL validation cutting invalid requests by 80% and real‑time
+          download status tracking.</div>
+      </div>
+      <div class="proj-tags"><span>Flask</span><span>yt-dlp</span><span>REST</span></div>
+      <div class="proj-preview-window">
+        <img src="nexconvert.png" alt="NexConvert Preview">
+      </div>
+    </div>
+
+    <div class="proj reveal">
+      <div class="proj-index mono">02</div>
+      <div>
+        <div class="proj-title">ResumeDost — AI Resume Analyzer<a href="https://resume-helper-lilac.vercel.app/"><span class="arrow">↗</span></a></div>
+        <div class="proj-desc">An ATS resume‑analysis platform on Flask and the Gemini API, automating scoring
+          and keyword extraction across 25+ resumes with a job‑description matching engine for skill‑gap
+          detection and personalised recommendations.</div>
+      </div>
+      <div class="proj-tags"><span>Flask</span><span>Gemini API</span><span>NLP</span></div>
+      <div class="proj-preview-window">
+        <img src="resumedost.png" alt="ResumeDost Preview">
+      </div>
+    </div>
+
+    
+    <div class="proj reveal">
+      <div class="proj-index mono">03</div>
+      <div>
+        <div class="proj-title">HR Analytics Dashboardt<a href=""><span class="arrow">↗</span></a></div>
+        <div class="proj-desc">Analysed 1,470+ employee records with Pandas and NumPy, then built 5+
+          interactive Tableau dashboards to surface attrition rates and the top three drivers of employee
+          turnover.</div>
+      </div>
+      <div class="proj-tags"><span>Tableau</span></div>
+    </div>
+  </section>
+
+  <section class="certs" id="certs">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-label">05 — Credentials</div>
+        <div class="sec-title">Certifications</div>
+      </div>
+    </div>
+    <div class="cert-list reveal">
+      <div class="cert-row">
+        <div>
+          <div class="cert-name">Data Analytics Job Simulation</div>
+          <div class="cert-org">Deloitte · Forage</div>
+        </div>
+        <div class="cert-date">JUN 2024</div>
+      </div>
+      <div class="cert-row">
+        <div>
+          <div class="cert-name">Data Visualization Job Simulation</div>
+          <div class="cert-org">Tata Consultancy Services · Forage</div>
+        </div>
+        <div class="cert-date">SEP 2024</div>
+      </div>
+      <div class="cert-row">
+        <div>
+          <div class="cert-name">Frontend Development Internship</div>
+          <div class="cert-org">CodeAlpha</div>
+        </div>
+        <div class="cert-date">JUL 2025</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="reveal">
+      <div class="contact-title">Let's build<br>something.</div>
+      <div class="contact-sub">vamsikrishnadasari1234@gmail.com</div>
+      <div class="contact-cta">
+        <a href="mailto:vamsikrishnadasari1234@gmail.com" class="btn solid">Say hello</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 Dasari Vamsi Krishna</div>
+    <div class="socials">
+      <a href="https://linkedin.com/in/Dasari-Vamsi-Krishna" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/Vamsi4527-dev" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:vamsikrishnadasari1234@gmail.com">Email</a>
+    </div>
+  </footer>
+
+</main>
+
+<script src="script.js" defer></script>
+
+</body>
+</html>
