@@ -469,9 +469,10 @@ for (var i = 0; i < projects.length; i++) {
 
       var preview = this.querySelector('.proj-preview-window');
       if (preview) {
+        var previewH = preview.offsetHeight;
         gsap.to(preview, {
           x: x + 35,
-          y: y - 180,
+          y: y - previewH / 2,
           duration: prefersReducedMotion ? 0 : 0.35,
           ease: 'power3.out',
           overwrite: 'auto'
