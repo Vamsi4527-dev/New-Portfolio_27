@@ -560,6 +560,12 @@
     }
   }
 
+  /* Wide variant for landscape screenshots (e.g. HR Dashboard) */
+  .proj-preview-wide {
+    width: 340px;
+    height: 200px;
+  }
+
   /* contact headline drifts gently, always alive */
   .contact-title{ animation:floaty 7s ease-in-out infinite; }
   @keyframes floaty{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
