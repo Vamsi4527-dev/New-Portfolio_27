@@ -620,3 +620,129 @@ if (mobileToggle && mobileOverlay) {
     });
   }
 }
+
+/* ---------- figure particle formation (contact section) ---------- */
+(function() {
+  var figureCanvas = document.getElementById('figureCanvas');
+  var fallbackImg = document.getElementById('figureFallbackImg');
+  if (!figureCanvas) { return; }
+
+  // Reduced motion: just show the static photo, skip the whole particle system
+  if (prefersReducedMotion) {
+    figureCanvas.style.display = 'none';
+    if (fallbackImg) { fallbackImg.style.display = 'block'; }
+    return;
+  }
+
+  var fctx = figureCanvas.getContext('2d');
+  var img = new Image();
+  var particles = [];
+  var released = false;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var rafId = null;
+
+  function sizeCanvas() {
+    var rect = figureCanvas.getBoundingClientRect();
+    figureCanvas.width = Math.max(1, Math.round(rect.width * dpr));
+    figureCanvas.height = Math.max(1, Math.round(rect.height * dpr));
+  }
+
+  function buildParticles() {
+    var off = document.createElement('canvas');
+    off.width = figureCanvas.width;
+    off.height = figureCanvas.height;
+    var octx = off.getContext('2d');
+    octx.drawImage(img, 0, 0, off.width, off.height);
+
+    var data;
+    try {
+      data = octx.getImageData(0, 0, off.width, off.height).data;
+    } catch (e) {
+      return;
+    }
+
+    var targetCount = isTouchDevice ? 2200 : 4500;
+    var step = Math.max(2, Math.round(Math.sqrt((off.width * off.height * 0.5) / targetCount)));
+
+    var newParticles = [];
+    for (var y = 0; y < off.height; y += step) {
+      for (var x = 0; x < off.width; x += step) {
+        var idx = (y * off.width + x) * 4;
+        var alpha = data[idx + 3];
+        if (alpha > 80) {
+          newParticles.push({
+            tx: x, ty: y,
+            x: x, y: y,
+            color: 'rgba(' + data[idx] + ',' + data[idx + 1] + ',' + data[idx + 2] + ',' + (alpha / 255) + ')',
+            size: (Math.random() * 1.1 + 0.9) * dpr,
+            ease: 0.045 + Math.random() * 0.05
+          });
+        }
+      }
+    }
+    particles = newParticles;
+  }
+
+  function scatterParticles() {
+    var w = figureCanvas.width, h = figureCanvas.height;
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      var angle = Math.random() * Math.PI * 2;
+      var dist = w * 0.9 + Math.random() * w * 1.6;
+      p.x = p.tx + Math.cos(angle) * dist;
+      p.y = p.ty + Math.sin(angle) * dist * 0.6 - h * 0.2;
+    }
+  }
+
+  function snapToTarget() {
+    for (var i = 0; i < particles.length; i++) {
+      particles[i].x = particles[i].tx;
+      particles[i].y = particles[i].ty;
+    }
+  }
+
+  function drawFrame() {
+    fctx.clearRect(0, 0, figureCanvas.width, figureCanvas.height);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      if (released) {
+        p.x += (p.tx - p.x) * p.ease;
+        p.y += (p.ty - p.y) * p.ease;
+      }
+      fctx.fillStyle = p.color;
+      fctx.beginPath();
+      fctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      fctx.fill();
+    }
+    rafId = requestAnimationFrame(drawFrame);
+  }
+
+  img.onload = function() {
+    sizeCanvas();
+    buildParticles();
+    scatterParticles();
+    if (!rafId) { drawFrame(); }
+
+    ScrollTrigger.create({
+      trigger: '#figureStage',
+      start: 'top 82%',
+      once: true,
+      onEnter: function() { released = true; }
+    });
+  };
+  img.onerror = function() {
+    figureCanvas.style.display = 'none';
+    if (fallbackImg) { fallbackImg.style.display = 'block'; }
+  };
+  img.src = 'portrait-figure.png';
+
+  window.addEventListener('resize', function() {
+    clearTimeout(window.__figureResizeT);
+    window.__figureResizeT = setTimeout(function() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      sizeCanvas();
+      buildParticles();
+      if (released) { snapToTarget(); } else { scatterParticles(); }
+    }, 200);
+  });
+})();
