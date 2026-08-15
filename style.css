@@ -417,6 +417,51 @@
   }
   .contact-sub{margin-top:22px;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:13px;}
   .contact-cta{margin-top:44px;}
+
+  /* ---------- figure particle formation ---------- */
+  .figure-wrap{position:relative;width:min(46vw,300px);margin:0 auto;}
+  .figure-stage{position:relative;width:100%;aspect-ratio:313/796;}
+  .figure-bg-name{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;text-transform:uppercase;
+    font-size:clamp(30px,6.4vw,84px);line-height:0.86;letter-spacing:-0.02em;
+    color:var(--fg);opacity:0.09;text-align:center;white-space:nowrap;
+    pointer-events:none;z-index:0;width:max-content;
+  }
+  #figureCanvas{position:relative;width:100%;height:100%;display:block;z-index:1;}
+  .figure-fallback-img{
+    display:none;position:absolute;inset:0;width:100%;height:100%;
+    object-fit:contain;z-index:1;
+  }
+  .finger-callout{
+    position:absolute;top:57%;transform:translateY(-50%);
+    font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:clamp(18px,2.6vw,30px);line-height:1.08;letter-spacing:-0.02em;
+    white-space:nowrap;z-index:2;color:var(--fg);
+  }
+  .finger-callout-left{right:100%;margin-right:16px;text-align:right;}
+  .finger-callout-right{left:100%;margin-left:16px;text-align:left;}
+  .figure-wrap, .figure-stage{ animation:floaty 7s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce){
+    #figureCanvas{display:none;}
+    .figure-fallback-img{display:block;}
+  }
+
+  @media (max-width:700px){
+    .figure-wrap{
+      width:58vw;display:flex;flex-direction:column;align-items:center;gap:14px;
+    }
+    .figure-stage{order:2;width:100%;}
+    .finger-callouts{display:contents;}
+    .finger-callout{
+      position:static;transform:none;white-space:normal;text-align:center;
+    }
+    .finger-callout-left{order:1;margin:0;}
+    .finger-callout-right{order:3;margin:0;}
+    .figure-bg-name{font-size:clamp(24px,10vw,54px);}
+  }
   footer{
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
     padding:40px 0;border-top:1px solid var(--line);
