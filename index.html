@@ -33,7 +33,7 @@
 
   <nav>
     <a href="#hero" class="brand">
-      <span class="brand-mark">VK</span>
+      <span class="brand-mark">DVK</span>
       <span class="brand-text">
         <span class="brand-role mono">AI &amp; DATA SCIENCE Student</span>
       </span>
@@ -83,7 +83,6 @@
         ATS tools, and dashboards with Python, Flask and clean, minimal interfaces.</p>
       <div class="hero-cta">
         <a href="#projects" class="btn solid">View projects</a>
-        <a href="mailto:vamsikrishnadasari1234@gmail.com" class="btn ghost">Get in touch</a>
         <a href="https://drive.google.com/file/d/1imD6Q85NbDiAeD9LpBXeLl7M-Tq1Gtlg/view?usp=sharing" target="_blank"
           rel="noopener" class="btn ghost">Resume <span class="btn-arrow">↗</span></a>
       </div>
@@ -271,6 +270,81 @@
               Andhra Pradesh State Council of Higher Education.</div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="leetcode" id="leetcode">
+      <div class="sec-head reveal">
+        <div>
+          <div class="sec-label">03.5 — Competitive</div>
+          <div class="sec-title">LeetCode</div>
+        </div>
+        <div class="sec-note">Problem-solving discipline, tracked live from LeetCode.</div>
+      </div>
+
+      <div class="lc-card reveal" id="lcCard">
+        <!-- Terminal-style header -->
+        <div class="lc-header">
+          <span class="lc-prompt mono">
+            <span class="lc-dollar">$</span> leetcode --stats
+          </span>
+          <div class="lc-header-right mono">
+            <span class="lc-status" id="lcStatus">[synced]</span>
+            <a href="https://leetcode.com/u/gB0getrBDb/" target="_blank" rel="noopener" class="lc-profile-link">
+              @gB0getrBDb <span class="arrow">→</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Stats content -->
+        <div class="lc-content" id="lcContent">
+          <!-- Summary counters -->
+          <div class="lc-counters">
+            <div class="lc-counter">
+              <span class="lc-counter-value" id="lcTotal">178</span>
+              <span class="lc-counter-label mono">solved</span>
+            </div>
+            <div class="lc-divider"></div>
+            <div class="lc-counter">
+              <span class="lc-counter-value" id="lcStreak">12</span>
+              <span class="lc-counter-label mono">day streak</span>
+            </div>
+          </div>
+
+          <!-- Heatmap -->
+          <div class="lc-heatmap-wrap">
+            <div class="lc-heatmap-scroll" id="lcHeatmapScroll">
+              <div class="lc-heatmap-grid" id="lcHeatmapGrid"></div>
+            </div>
+          </div>
+
+          <!-- Footer with legend, active days, and retry -->
+          <div class="lc-footer">
+            <div class="lc-footer-left">
+              <div class="lc-legend mono">
+                <span>less</span>
+                <div class="lc-legend-box lc-l0"></div>
+                <div class="lc-legend-box lc-l1"></div>
+                <div class="lc-legend-box lc-l2"></div>
+                <div class="lc-legend-box lc-l3"></div>
+                <div class="lc-legend-box lc-l4"></div>
+                <span>more</span>
+              </div>
+              <div class="lc-active-days mono" id="lcActiveDays">90 active days</div>
+            </div>
+            <button class="lc-retry mono" id="lcRetryBtn" type="button" aria-label="Refresh LeetCode stats">
+              retry <span class="lc-retry-icon">↺</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multi-line floating tooltip matching friend's design -->
+      <div class="lc-tooltip" id="lcTooltip" style="display:none;">
+        <div class="lc-tooltip-num" id="lcTooltipNum">0</div>
+        <div class="lc-tooltip-sub mono">submissions</div>
+        <div class="lc-tooltip-line"></div>
+        <div class="lc-tooltip-date mono" id="lcTooltipDate"></div>
       </div>
     </section>
 
