@@ -20,8 +20,8 @@ var cursorRing = document.getElementById('cursorRing');
 if (prefersReducedMotion === false && isTouchDevice === false) {
   // Move cursor with mouse
   window.addEventListener('pointermove', function(event) {
-    gsap.to(cursor, { x: event.clientX, y: event.clientY, duration: 0.15, ease: 'power2.out' });
-    gsap.to(cursorRing, { x: event.clientX, y: event.clientY, duration: 0.45, ease: 'power3.out' });
+    gsap.to(cursor, { x: event.clientX, y: event.clientY, duration: 0.06, ease: 'power2.out' });
+    gsap.to(cursorRing, { x: event.clientX, y: event.clientY, duration: 0.2, ease: 'power3.out' });
   });
 
   // Add hover effect to links and buttons
@@ -552,6 +552,226 @@ for (var i = 0; i < certs.length; i++) {
     });
   }
 }
+
+/* ---------- leetcode stats ---------- */
+(function() {
+  var LC_USERNAME = 'gB0getrBDb';
+
+  // Accurate real stats fetched directly from LeetCode GraphQL
+  var STATIC_DATA = {
+    totalSolved: 178,
+    streak: 12,
+    totalActiveDays: 90,
+    submissionCalendar: "{\"1767225600\": 7, \"1767312000\": 7, \"1767571200\": 3, \"1767744000\": 1, \"1768176000\": 3, \"1768262400\": 2, \"1769212800\": 2, \"1769385600\": 5, \"1769558400\": 6, \"1769644800\": 1, \"1769817600\": 3, \"1770768000\": 2, \"1770854400\": 1, \"1771027200\": 7, \"1771459200\": 3, \"1771632000\": 1, \"1771718400\": 1, \"1772323200\": 12, \"1772582400\": 4, \"1772755200\": 3, \"1772841600\": 2, \"1772928000\": 1, \"1775260800\": 1, \"1778112000\": 1, \"1780790400\": 2, \"1781222400\": 2, \"1782086400\": 3, \"1782777600\": 2, \"1783036800\": 4, \"1783123200\": 3, \"1783296000\": 7, \"1783382400\": 2, \"1783814400\": 3, \"1783900800\": 7, \"1783987200\": 14, \"1784073600\": 13, \"1784160000\": 9, \"1784246400\": 6, \"1784332800\": 6, \"1784419200\": 2, \"1784505600\": 8, \"1784592000\": 4, \"1784678400\": 13, \"1784764800\": 8, \"1784937600\": 2, \"1785456000\": 3, \"1785542400\": 4, \"1785628800\": 3, \"1785715200\": 3, \"1785801600\": 7, \"1785888000\": 6, \"1785974400\": 5, \"1786060800\": 2, \"1786147200\": 4, \"1786320000\": 7, \"1786406400\": 3, \"1786492800\": 3, \"1786579200\": 7, \"1786752000\": 1, \"1786924800\": 1, \"1787011200\": 3, \"1787097600\": 2, \"1787184000\": 4, \"1787270400\": 1, \"1787356800\": 3, \"1787616000\": 3, \"1756944000\": 1, \"1757030400\": 1, \"1757203200\": 1, \"1757635200\": 2, \"1757721600\": 1, \"1757894400\": 1, \"1758240000\": 4, \"1758931200\": 2, \"1759190400\": 1, \"1759276800\": 1, \"1759536000\": 1, \"1759881600\": 5, \"1760486400\": 1, \"1765324800\": 1, \"1765929600\": 1, \"1766016000\": 3, \"1766102400\": 1, \"1766275200\": 2, \"1766534400\": 1, \"1766620800\": 2, \"1766707200\": 1, \"1766880000\": 3, \"1766966400\": 3, \"1767052800\": 4}"
+  };
+
+  // DOM refs
+  var lcTotal = document.getElementById('lcTotal');
+  var lcStreak = document.getElementById('lcStreak');
+  var lcActiveDays = document.getElementById('lcActiveDays');
+  var lcStatus = document.getElementById('lcStatus');
+  var lcHeatmapGrid = document.getElementById('lcHeatmapGrid');
+  var lcHeatmapScroll = document.getElementById('lcHeatmapScroll');
+  var lcTooltip = document.getElementById('lcTooltip');
+  var lcTooltipNum = document.getElementById('lcTooltipNum');
+  var lcTooltipSub = document.getElementById('lcTooltipSub');
+  var lcTooltipDate = document.getElementById('lcTooltipDate');
+  var lcRetryBtn = document.getElementById('lcRetryBtn');
+
+  if (!lcHeatmapGrid) return;
+
+  function formatDateKey(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function animateCount(el, target) {
+    if (!el) return;
+    var start = 0;
+    var duration = 900;
+    var startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(start + (target - start) * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function buildHeatmap(calendarStr) {
+    var raw;
+    try { raw = JSON.parse(calendarStr || '{}'); } catch(e) { raw = {}; }
+
+    // Map timestamps to YYYY-MM-DD
+    var dayMap = {};
+    var maxCount = 1;
+    var maxTs = 0;
+
+    for (var ts in raw) {
+      var nts = Number(ts);
+      if (nts > maxTs) maxTs = nts;
+      var d = new Date(nts * 1000);
+      var key = formatDateKey(d);
+      var count = raw[ts];
+      dayMap[key] = (dayMap[key] || 0) + count;
+      if (dayMap[key] > maxCount) maxCount = dayMap[key];
+    }
+
+    function toLevel(c) {
+      if (!c || c <= 0) return 0;
+      if (c <= maxCount * 0.25) return 1;
+      if (c <= maxCount * 0.50) return 2;
+      if (c <= maxCount * 0.75) return 3;
+      return 4;
+    }
+
+    // Determine current/latest reference date
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var latestSubmissionDate = maxTs > 0 ? new Date(maxTs * 1000) : today;
+    var refDate = latestSubmissionDate > today ? latestSubmissionDate : today;
+
+    // Anchor the grid to end at Saturday of the latest week
+    var endWeek = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate());
+    var endDow = endWeek.getDay(); // 0 = Sun, 6 = Sat
+    endWeek.setDate(endWeek.getDate() + (6 - endDow));
+
+    // Span exactly 52 full weeks (364 days), matching LeetCode and GitHub
+    var startWeek = new Date(endWeek.getTime());
+    startWeek.setDate(startWeek.getDate() - (52 * 7) + 1);
+
+    // Build columns
+    lcHeatmapGrid.innerHTML = '';
+    var cursor = new Date(startWeek.getTime());
+    var col = document.createElement('div');
+    col.className = 'lc-heatmap-col';
+    var dayCountInWeek = 0;
+
+    while (cursor <= endWeek) {
+      var dateKey = formatDateKey(cursor);
+      var isFuture = cursor > today && cursor > latestSubmissionDate;
+      var count = isFuture ? 0 : (dayMap[dateKey] || 0);
+      var level = toLevel(count);
+
+      var cell = document.createElement('div');
+      cell.className = 'lc-heatmap-cell lc-l' + level;
+      cell.setAttribute('data-date', dateKey);
+      cell.setAttribute('data-count', count);
+      cell.setAttribute('data-dow', cursor.toLocaleDateString('en-US', { weekday: 'short' }));
+      cell.setAttribute('data-mday', cursor.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      cell.setAttribute('data-year', cursor.getFullYear());
+
+      col.appendChild(cell);
+      dayCountInWeek++;
+
+      if (dayCountInWeek === 7) {
+        lcHeatmapGrid.appendChild(col);
+        col = document.createElement('div');
+        col.className = 'lc-heatmap-col';
+        dayCountInWeek = 0;
+      }
+
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    if (dayCountInWeek > 0) {
+      lcHeatmapGrid.appendChild(col);
+    }
+
+    // Auto-scroll to latest contributions on right edge
+    setTimeout(function() {
+      if (lcHeatmapScroll) {
+        lcHeatmapScroll.scrollLeft = lcHeatmapScroll.scrollWidth;
+      }
+    }, 150);
+
+    // Attach tooltip listeners
+    var cells = lcHeatmapGrid.querySelectorAll('.lc-heatmap-cell');
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].addEventListener('mouseenter', function() {
+        var count = parseInt(this.getAttribute('data-count'), 10) || 0;
+        var dow = this.getAttribute('data-dow') + ',';
+        var mday = this.getAttribute('data-mday') + ',';
+        var year = this.getAttribute('data-year');
+
+        lcTooltipNum.textContent = count;
+        lcTooltipSub.textContent = count === 1 ? 'submission' : 'submissions';
+        lcTooltipDate.innerHTML = dow + '<br>' + mday + '<br>' + year;
+        lcTooltip.style.display = 'block';
+
+        var rect = this.getBoundingClientRect();
+        lcTooltip.style.left = (rect.left + rect.width / 2) + 'px';
+        lcTooltip.style.top = (rect.top - 8) + 'px';
+      });
+
+      cells[i].addEventListener('mouseleave', function() {
+        lcTooltip.style.display = 'none';
+      });
+    }
+  }
+
+  function renderStats(data, isLive) {
+    if (lcTotal) animateCount(lcTotal, data.totalSolved);
+    if (lcStreak) animateCount(lcStreak, data.streak);
+    if (lcActiveDays) lcActiveDays.textContent = data.totalActiveDays + ' active days';
+    if (lcStatus) lcStatus.textContent = isLive ? '[live]' : '[synced]';
+
+    buildHeatmap(data.submissionCalendar);
+  }
+
+  // Attempt live refresh
+  function fetchLive() {
+    if (lcRetryBtn) lcRetryBtn.classList.add('loading');
+    var base = 'https://alfa-leetcode-api.onrender.com';
+
+    function fetchWithTimeout(url, ms) {
+      var ctrl = new AbortController();
+      var id = setTimeout(function() { ctrl.abort(); }, ms);
+      return fetch(url, { signal: ctrl.signal }).then(function(r) {
+        clearTimeout(id);
+        if (!r.ok) throw new Error('status ' + r.status);
+        return r.json();
+      });
+    }
+
+    Promise.all([
+      fetchWithTimeout(base + '/userProfile/' + LC_USERNAME, 9000),
+      fetchWithTimeout(base + '/' + LC_USERNAME + '/calendar', 9000)
+    ]).then(function(res) {
+      var profile = res[0];
+      var cal = res[1];
+      var calStr = cal.submissionCalendar || cal;
+      var liveData = {
+        totalSolved: profile.totalSolved || STATIC_DATA.totalSolved,
+        streak: cal.streak || cal.currentStreak || STATIC_DATA.streak,
+        totalActiveDays: cal.totalActiveDays || STATIC_DATA.totalActiveDays,
+        submissionCalendar: typeof calStr === 'string' ? calStr : JSON.stringify(calStr)
+      };
+      renderStats(liveData, true);
+    }).catch(function() {
+      // Graceful fallback to verified accurate snapshot
+      renderStats(STATIC_DATA, false);
+    }).finally(function() {
+      if (lcRetryBtn) lcRetryBtn.classList.remove('loading');
+    });
+  }
+
+  // Initial render: display verified accurate data immediately (zero delay/blank)
+  renderStats(STATIC_DATA, false);
+
+  // Background check for live updates if available
+  fetchLive();
+
+  // Retry button
+  if (lcRetryBtn) {
+    lcRetryBtn.addEventListener('click', function() {
+      fetchLive();
+    });
+  }
+})();
 
 /* ---------- active nav link ---------- */
 var navLinks = document.querySelectorAll('[data-nav]');
