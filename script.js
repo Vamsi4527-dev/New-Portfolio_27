@@ -84,7 +84,7 @@ if (prefersReducedMotion === false && isTouchDevice === false && cursor && curso
 
 /* ---------- magnetic buttons ---------- */
 if (hasGSAP && prefersReducedMotion === false && isTouchDevice === false) {
-  var magneticElements = document.querySelectorAll('.btn, .theme-toggle, .socials a, .brand-mark, .mobile-menu-toggle');
+  var magneticElements = document.querySelectorAll('.btn, .socials a, .brand-mark, .mobile-menu-toggle');
   
   for (var i = 0; i < magneticElements.length; i++) {
     (function(el) {
@@ -666,7 +666,7 @@ for (var i = 0; i < certs.length; i++) {
   var LC_USERNAME = 'gB0getrBDb';
 
   var STATIC_DATA = {
-    totalSolved: 178,
+    totalSolved: 180,
     streak: 12,
     totalActiveDays: 90,
     submissionCalendar: "{\"1767225600\": 7, \"1767312000\": 7, \"1767571200\": 3, \"1767744000\": 1, \"1768176000\": 3, \"1768262400\": 2, \"1769212800\": 2, \"1769385600\": 5, \"1769558400\": 6, \"1769644800\": 1, \"1769817600\": 3, \"1770768000\": 2, \"1770854400\": 1, \"1771027200\": 7, \"1771459200\": 3, \"1771632000\": 1, \"1771718400\": 1, \"1772323200\": 12, \"1772582400\": 4, \"1772755200\": 3, \"1772841600\": 2, \"1772928000\": 1, \"1775260800\": 1, \"1778112000\": 1, \"1780790400\": 2, \"1781222400\": 2, \"1782086400\": 3, \"1782777600\": 2, \"1783036800\": 4, \"1783123200\": 3, \"1783296000\": 7, \"1783382400\": 2, \"1783814400\": 3, \"1783900800\": 7, \"1783987200\": 14, \"1784073600\": 13, \"1784160000\": 9, \"1784246400\": 6, \"1784332800\": 6, \"1784419200\": 2, \"1784505600\": 8, \"1784592000\": 4, \"1784678400\": 13, \"1784764800\": 8, \"1784937600\": 2, \"1785456000\": 3, \"1785542400\": 4, \"1785628800\": 3, \"1785715200\": 3, \"1785801600\": 7, \"1785888000\": 6, \"1785974400\": 5, \"1786060800\": 2, \"1786147200\": 4, \"1786320000\": 7, \"1786406400\": 3, \"1786492800\": 3, \"1786579200\": 7, \"1786752000\": 1, \"1786924800\": 1, \"1787011200\": 3, \"1787097600\": 2, \"1787184000\": 4, \"1787270400\": 1, \"1787356800\": 3, \"1787616000\": 3, \"1756944000\": 1, \"1757030400\": 1, \"1757203200\": 1, \"1757635200\": 2, \"1757721600\": 1, \"1757894400\": 1, \"1758240000\": 4, \"1758931200\": 2, \"1759190400\": 1, \"1759276800\": 1, \"1759536000\": 1, \"1759881600\": 5, \"1760486400\": 1, \"1765324800\": 1, \"1765929600\": 1, \"1766016000\": 3, \"1766102400\": 1, \"1766275200\": 2, \"1766534400\": 1, \"1766620800\": 2, \"1766707200\": 1, \"1766880000\": 3, \"1766966400\": 3, \"1767052800\": 4}"
@@ -691,6 +691,26 @@ for (var i = 0; i < certs.length; i++) {
     var m = String(d.getMonth() + 1).padStart(2, '0');
     var day = String(d.getDate()).padStart(2, '0');
     return y + '-' + m + '-' + day;
+  }
+
+  function getCurrentStreak(calendar) {
+    var activeDays = {};
+    for (var timestamp in calendar) {
+      if (Number(calendar[timestamp]) > 0) {
+        activeDays[formatDateKey(new Date(Number(timestamp) * 1000))] = true;
+      }
+    }
+
+    var date = new Date();
+    date.setHours(0, 0, 0, 0);
+    if (!activeDays[formatDateKey(date)]) date.setDate(date.getDate() - 1);
+
+    var streak = 0;
+    while (activeDays[formatDateKey(date)]) {
+      streak++;
+      date.setDate(date.getDate() - 1);
+    }
+    return streak;
   }
 
   function animateCount(el, target) {
@@ -824,30 +844,32 @@ for (var i = 0; i < certs.length; i++) {
 
   function fetchLive() {
     if (lcRetryBtn) lcRetryBtn.classList.add('loading');
-    var base = 'https://alfa-leetcode-api.onrender.com';
+    var profileUrl = 'https://leetcode-api-faisalshohag.vercel.app/' + encodeURIComponent(LC_USERNAME);
 
     function fetchWithTimeout(url, ms) {
       var ctrl = new AbortController();
       var id = setTimeout(function() { ctrl.abort(); }, ms);
       return fetch(url, { signal: ctrl.signal }).then(function(r) {
-        clearTimeout(id);
         if (!r.ok) throw new Error('status ' + r.status);
         return r.json();
-      });
+      }).finally(function() { clearTimeout(id); });
     }
 
-    Promise.all([
-      fetchWithTimeout(base + '/userProfile/' + LC_USERNAME, 9000),
-      fetchWithTimeout(base + '/' + LC_USERNAME + '/calendar', 9000)
-    ]).then(function(res) {
-      var profile = res[0];
-      var cal = res[1];
-      var calStr = cal.submissionCalendar || cal;
+    fetchWithTimeout(profileUrl, 9000).then(function(profile) {
+      var calendar = profile.submissionCalendar || {};
+      if (typeof calendar === 'string') {
+        try { calendar = JSON.parse(calendar); } catch (e) { calendar = {}; }
+      }
+      var totalSolved = Number(profile.totalSolved);
+      if (!Number.isFinite(totalSolved)) throw new Error('Invalid LeetCode profile response');
+      var activeDays = Object.keys(calendar).filter(function(timestamp) {
+        return Number(calendar[timestamp]) > 0;
+      }).length;
       var liveData = {
-        totalSolved: profile.totalSolved || STATIC_DATA.totalSolved,
-        streak: cal.streak || cal.currentStreak || STATIC_DATA.streak,
-        totalActiveDays: cal.totalActiveDays || STATIC_DATA.totalActiveDays,
-        submissionCalendar: typeof calStr === 'string' ? calStr : JSON.stringify(calStr)
+        totalSolved: totalSolved,
+        streak: getCurrentStreak(calendar),
+        totalActiveDays: activeDays,
+        submissionCalendar: JSON.stringify(calendar)
       };
       renderStats(liveData, true);
     }).catch(function() {
@@ -929,6 +951,10 @@ if (!hasGSAP || !hasScrollTrigger) {
     }
   });
 }
+
+/* ---------- figure particle formation (contact section) ---------- */
+// Removed intentionally to eliminate the glitch-style contact effect.
+// The contact section now keeps the static text treatment without the generated particle canvas.
 
 /* ---------- Global ScrollTrigger Refresh & Safety Fallback ---------- */
 window.addEventListener('load', function() {
