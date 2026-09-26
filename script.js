@@ -83,6 +83,12 @@
     z-index:10000;
     display:flex;align-items:center;justify-content:center;
     flex-direction:column;
+    animation: autoDismissIntro 0.6s ease 2.2s forwards;
+  }
+  @keyframes autoDismissIntro {
+    0% { opacity: 1; pointer-events: all; }
+    99% { opacity: 0; pointer-events: none; }
+    100% { opacity: 0; pointer-events: none; visibility: hidden; display: none; }
   }
   .intro-word{
     font-family:'Space Grotesk',sans-serif;
