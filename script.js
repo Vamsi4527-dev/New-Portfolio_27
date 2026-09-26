@@ -72,6 +72,8 @@ ScrollTrigger.create({
   toggleClass: { targets: 'nav', className: 'scrolled' }
 });
 
+
+
 /* ---------- theme toggle ---------- */
 var themeToggle = document.getElementById('themeToggle');
 var rootElement = document.documentElement;
@@ -225,99 +227,97 @@ if (prefersReducedMotion) {
           .set('#intro', { display: 'none' });
 }
 
-/* ---------- hero name kinetic setup & animations ---------- */
-var heroLine1Text = "DASARI VAMSI";
-var heroLine2Text = "KRISHNA";
-var heroLine1 = document.getElementById('heroLine1');
-var heroLine2 = document.getElementById('heroLine2');
+/* ---------- Split hero display headline into interactive letter spans ---------- */
+var heroDisplay = document.querySelector('.hero-display');
+var heroLines = document.querySelectorAll('.hero-display-line');
 
-function buildHeroText(element, text) {
-  if (!element) return;
+heroLines.forEach(function(line) {
+  var text = line.textContent.trim();
+  line.innerHTML = '';
   for (var i = 0; i < text.length; i++) {
-    // Outer box container for mouse displacement
-    var charBox = document.createElement('span');
-    charBox.className = 'hero-char-box';
-    
-    // Inner span for reveal and breathing animation
-    var charSpan = document.createElement('span');
-    charSpan.className = 'hero-char';
-    if (text[i] === ' ') {
-      charSpan.innerHTML = '&nbsp;';
+    var ch = text[i];
+    var span = document.createElement('span');
+    span.className = 'hero-char';
+    if (ch === ' ') {
+      span.innerHTML = '&nbsp;';
+      span.classList.add('hero-space');
     } else {
-      charSpan.textContent = text[i];
+      span.textContent = ch;
     }
-    
-    charBox.appendChild(charSpan);
-    element.appendChild(charBox);
+    line.appendChild(span);
   }
-}
+});
 
-buildHeroText(heroLine1, heroLine1Text);
-buildHeroText(heroLine2, heroLine2Text);
-
-// Staggered Kinetic Entrance Reveal
-var revealDelay = prefersReducedMotion ? 0 : 2.0;
-gsap.fromTo('.hero-char', 
-  { opacity: 0, x: 12, y: 22, scale: 0.96 },
-  { 
-    opacity: 1, x: 0, y: 0, scale: 1, 
-    duration: 1.4, 
-    ease: 'power3.out', 
-    stagger: 0.03,
-    delay: revealDelay,
-    onComplete: function() {
-      if (prefersReducedMotion === false) {
-        // Continuous organic floating/breathing micro-motion
-        gsap.to('.hero-char', {
-          y: '-4px',
-          duration: 2.8,
-          yoyo: true,
-          repeat: -1,
-          ease: 'sine.inOut',
-          stagger: {
-            each: 0.06,
-            from: 'random'
-          }
+// Interactive kinetic wave effect when mouse moves over headline
+if (heroDisplay && !prefersReducedMotion) {
+  heroDisplay.addEventListener('mousemove', function(e) {
+    var chars = heroDisplay.querySelectorAll('.hero-char:not(.hero-space)');
+    chars.forEach(function(char) {
+      var rect = char.getBoundingClientRect();
+      var charX = rect.left + rect.width / 2;
+      var charY = rect.top + rect.height / 2;
+      var dist = Math.hypot(e.clientX - charX, e.clientY - charY);
+      var maxDist = 90;
+      if (dist < maxDist) {
+        var factor = 1 - (dist / maxDist);
+        var translateY = -14 * factor;
+        var scale = 1 + 0.22 * factor;
+        gsap.to(char, {
+          y: translateY,
+          scale: scale,
+          duration: 0.2,
+          ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      } else {
+        gsap.to(char, {
+          y: 0,
+          scale: 1,
+          duration: 0.35,
+          ease: 'power2.out',
+          overwrite: 'auto'
         });
       }
-    }
-  }
-);
+    });
+  });
 
-// Staggered reveal for supporting subheadings
-var subDelay = prefersReducedMotion ? 0 : 2.3;
-gsap.fromTo('.hero-role, .hero-cta, .eyebrow, .scroll-cue',
-  { opacity: 0, y: 16 },
-  { opacity: 1, y: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out', delay: subDelay }
-);
-
-// Elegant hover displacement tracking for individual characters
-if (prefersReducedMotion === false && isTouchDevice === false) {
-  window.addEventListener('pointermove', function(event) {
-    var boxes = document.querySelectorAll('.hero-char-box');
-    for (var i = 0; i < boxes.length; i++) {
-      var box = boxes[i];
-      var rect = box.getBoundingClientRect();
-      var boxCenterX = rect.left + rect.width / 2;
-      var boxCenterY = rect.top + rect.height / 2;
-      
-      var diffX = event.clientX - boxCenterX;
-      var diffY = event.clientY - boxCenterY;
-      var distance = Math.sqrt(diffX * diffX + diffY * diffY);
-      
-      // Affect letters within 140px range
-      if (distance < 140) {
-        var force = (140 - distance) / 140;
-        var moveX = (diffX / distance) * -8 * force;
-        var moveY = (diffY / distance) * -6 * force;
-        gsap.to(box, { x: moveX, y: moveY, duration: 0.5, ease: 'power2.out', overwrite: 'auto' });
-      } else {
-        // Smoothly settle back to default coordinates
-        gsap.to(box, { x: 0, y: 0, duration: 0.8, ease: 'power2.out', overwrite: 'auto' });
-      }
-    }
+  heroDisplay.addEventListener('mouseleave', function() {
+    var chars = heroDisplay.querySelectorAll('.hero-char');
+    gsap.to(chars, {
+      y: 0,
+      scale: 1,
+      duration: 0.4,
+      ease: 'power3.out',
+      overwrite: 'auto'
+    });
   });
 }
+
+/* ---------- hero display lines — slide-up reveal ---------- */
+var revealDelay = prefersReducedMotion ? 0 : 2.0;
+
+if (!prefersReducedMotion) {
+  // Animate translateY in px — works correctly alongside CSS scaleX(0.72)
+  gsap.fromTo(heroLines,
+    { y: 120, opacity: 0 },
+    {
+      y: 0, opacity: 1,
+      duration: 1.1,
+      ease: 'power4.out',
+      stagger: 0.14,
+      delay: revealDelay
+    }
+  );
+} else {
+  gsap.set(heroLines, { y: 0, opacity: 1 });
+}
+
+// Supporting elements reveal
+var subDelay = prefersReducedMotion ? 0 : 2.3;
+gsap.fromTo('.hero-bottom, .hero-eyebrow, .scroll-cue',
+  { opacity: 0, y: 18 },
+  { opacity: 1, y: 0, duration: 0.9, stagger: 0.1, ease: 'power3.out', delay: subDelay }
+);
 
 if (!prefersReducedMotion) {
   gsap.to('.hero', {
@@ -565,7 +565,7 @@ for (var i = 0; i < certs.length; i++) {
     submissionCalendar: "{\"1767225600\": 7, \"1767312000\": 7, \"1767571200\": 3, \"1767744000\": 1, \"1768176000\": 3, \"1768262400\": 2, \"1769212800\": 2, \"1769385600\": 5, \"1769558400\": 6, \"1769644800\": 1, \"1769817600\": 3, \"1770768000\": 2, \"1770854400\": 1, \"1771027200\": 7, \"1771459200\": 3, \"1771632000\": 1, \"1771718400\": 1, \"1772323200\": 12, \"1772582400\": 4, \"1772755200\": 3, \"1772841600\": 2, \"1772928000\": 1, \"1775260800\": 1, \"1778112000\": 1, \"1780790400\": 2, \"1781222400\": 2, \"1782086400\": 3, \"1782777600\": 2, \"1783036800\": 4, \"1783123200\": 3, \"1783296000\": 7, \"1783382400\": 2, \"1783814400\": 3, \"1783900800\": 7, \"1783987200\": 14, \"1784073600\": 13, \"1784160000\": 9, \"1784246400\": 6, \"1784332800\": 6, \"1784419200\": 2, \"1784505600\": 8, \"1784592000\": 4, \"1784678400\": 13, \"1784764800\": 8, \"1784937600\": 2, \"1785456000\": 3, \"1785542400\": 4, \"1785628800\": 3, \"1785715200\": 3, \"1785801600\": 7, \"1785888000\": 6, \"1785974400\": 5, \"1786060800\": 2, \"1786147200\": 4, \"1786320000\": 7, \"1786406400\": 3, \"1786492800\": 3, \"1786579200\": 7, \"1786752000\": 1, \"1786924800\": 1, \"1787011200\": 3, \"1787097600\": 2, \"1787184000\": 4, \"1787270400\": 1, \"1787356800\": 3, \"1787616000\": 3, \"1756944000\": 1, \"1757030400\": 1, \"1757203200\": 1, \"1757635200\": 2, \"1757721600\": 1, \"1757894400\": 1, \"1758240000\": 4, \"1758931200\": 2, \"1759190400\": 1, \"1759276800\": 1, \"1759536000\": 1, \"1759881600\": 5, \"1760486400\": 1, \"1765324800\": 1, \"1765929600\": 1, \"1766016000\": 3, \"1766102400\": 1, \"1766275200\": 2, \"1766534400\": 1, \"1766620800\": 2, \"1766707200\": 1, \"1766880000\": 3, \"1766966400\": 3, \"1767052800\": 4}"
   };
 
-  // DOM refs
+ 
   var lcTotal = document.getElementById('lcTotal');
   var lcStreak = document.getElementById('lcStreak');
   var lcActiveDays = document.getElementById('lcActiveDays');
