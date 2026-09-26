@@ -713,8 +713,12 @@ for (var i = 0; i < certs.length; i++) {
     return streak;
   }
 
+  var countAnimationFrames = new WeakMap();
+
   function animateCount(el, target) {
     if (!el) return;
+    var previousFrame = countAnimationFrames.get(el);
+    if (previousFrame) cancelAnimationFrame(previousFrame);
     var start = 0;
     var duration = 900;
     var startTime = null;
@@ -723,9 +727,21 @@ for (var i = 0; i < certs.length; i++) {
       var progress = Math.min((ts - startTime) / duration, 1);
       var eased = 1 - Math.pow(1 - progress, 3);
       el.textContent = Math.round(start + (target - start) * eased);
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) {
+        countAnimationFrames.set(el, requestAnimationFrame(step));
+      } else {
+        countAnimationFrames.delete(el);
+      }
     }
-    requestAnimationFrame(step);
+    countAnimationFrames.set(el, requestAnimationFrame(step));
+  }
+
+  function setCount(el, target) {
+    if (!el) return;
+    var frame = countAnimationFrames.get(el);
+    if (frame) cancelAnimationFrame(frame);
+    countAnimationFrames.delete(el);
+    el.textContent = target;
   }
 
   function buildHeatmap(calendarStr) {
@@ -834,10 +850,15 @@ for (var i = 0; i < certs.length; i++) {
   }
 
   function renderStats(data, isLive) {
-    if (lcTotal) animateCount(lcTotal, data.totalSolved);
-    if (lcStreak) animateCount(lcStreak, data.streak);
+    if (isLive) {
+      setCount(lcTotal, data.totalSolved);
+      setCount(lcStreak, data.streak);
+    } else {
+      animateCount(lcTotal, data.totalSolved);
+      animateCount(lcStreak, data.streak);
+    }
     if (lcActiveDays) lcActiveDays.textContent = data.totalActiveDays + ' active days';
-    if (lcStatus) lcStatus.textContent = isLive ? '[live]' : '[synced]';
+    if (lcStatus) lcStatus.textContent = isLive ? '[live]' : '[cached]';
 
     buildHeatmap(data.submissionCalendar);
   }
